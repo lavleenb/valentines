@@ -1,0 +1,125 @@
+@use "sass:string";
+@use 'sass:list';
+@use 'sass:meta';
+
+@function listBuilder($n, $color){
+    $ret: ();
+    @for $i from 1 through $n {
+        $ret: list.append($ret, $color)
+    }
+    @return $ret;
+}
+
+@function flattenList($lst) {
+    $res: ();
+    $len: list.length($lst);
+    @for $j from 1 through $len {
+        @if meta.type-of($value: list.nth($lst, $j)) == 'list'{
+            $res: list.join($res, flattenList(list.nth($lst, $j)));
+        } @else {
+            $res: list.append($res, list.nth($lst, $j));
+        }
+    }
+
+    @return $res;
+}
+
+@function pixelize($colors, $size){ 
+    $result: '';
+    $numRows: list.length($colors);
+    @for $k from 1 through $numRows {
+        $colors: list.set-nth($colors, $k, flattenList(list.nth($colors, $k)));
+    }
+
+    @for $rowIndex from 1 through $numRows {
+        $y: ($rowIndex);
+        $row: list.nth($colors, $rowIndex);
+        $numCols: list.length($row);
+
+        @for $cellIndex from 1 through $numCols {
+            $x: ($cellIndex);
+            $color: list.nth($row, $cellIndex);
+
+            $sep: ', ';
+            @if $x == 0 and $y == 0 {
+                $sep: '',
+            }
+
+            $result: $result + '#{$sep}#{$x * $size} #{$y * $size} #{$color}'
+        }
+    }
+
+    $result: string.unquote($result);
+    @return $result
+}
+
+$size: 20px;
+
+$t: transparent;
+$white: #fff;
+$lightgrey: #f4f4f4;
+$grey: #dedede;
+$pink: #ffcbdf;
+
+
+//total 31 pixels
+$envelope: (
+    ($t, $t, listBuilder(27, $white), $t, $t), //1
+    ($t, $lightgrey, listBuilder(28, $white), $t), //2
+    ($lightgrey, $grey, $lightgrey, listBuilder(26, $white), $grey, $lightgrey),//3
+    ($lightgrey, $white, $grey, $lightgrey, listBuilder(24, $white), $grey, $white, $white),//4
+    ($lightgrey, $white, $white, $grey, $grey, $lightgrey, listBuilder(20, $white), $grey, $grey, listBuilder(3, $white)),
+    ($lightgrey, listBuilder(4, $white), listBuilder(2, $grey), $lightgrey, listBuilder(16, $white), listBuilder(2, $grey), listBuilder(5, $white)),
+    ($lightgrey, listBuilder(6, $white), listBuilder(2, $grey), $lightgrey, listBuilder(12, $white), listBuilder(2, $grey), listBuilder(7, $white)),
+    ($lightgrey, listBuilder(8, $white), $grey, $lightgrey, listBuilder(10, $white), $grey, listBuilder(9, $white)),
+    ($lightgrey, listBuilder(9, $white), listBuilder(2, $grey), $lightgrey, listBuilder(6, $white), listBuilder(2, $grey), listBuilder(10, $white)),
+    ($lightgrey, listBuilder(11, $white), listBuilder(2, $grey), $lightgrey, listBuilder(2, $white), listBuilder(2, $grey), $lightgrey, listBuilder(11, $white)),
+    ($lightgrey, listBuilder(10, $white), $grey, $lightgrey, $white, $grey, $lightgrey, $grey, listBuilder(2, $white), $grey, $lightgrey, listBuilder(10, $white)),
+    ($lightgrey, listBuilder(9, $white), $grey, $lightgrey, listBuilder(3, $white), $grey, listBuilder(4, $white), $grey, $lightgrey, listBuilder(9, $white)),
+    ($lightgrey, listBuilder(7, $white), listBuilder(2, $grey), $lightgrey, listBuilder(10, $white), listBuilder(2, $grey), $lightgrey, listBuilder(7, $white)),
+    ($lightgrey, listBuilder(6, $white), $grey, $lightgrey, listBuilder(14, $white), $grey, $lightgrey, listBuilder(6, $white)),
+    ($lightgrey, listBuilder(5, $white), $grey, $lightgrey, listBuilder(16, $white), $grey, $lightgrey, listBuilder(5, $white)),
+    ($lightgrey, listBuilder(4, $white), $grey, $lightgrey, listBuilder(18, $white), $grey, $lightgrey, listBuilder(4, $white)),
+    ($lightgrey, listBuilder(3, $white), $grey, $lightgrey, listBuilder(20, $white), $grey, $lightgrey, listBuilder(3, $white)),
+    ($t, $lightgrey, listBuilder(2, $grey), $lightgrey, listBuilder(22, $white), listBuilder(2, $grey), $lightgrey),
+    ($t, $t, listBuilder(27, $lightgrey), $t, $t)
+);
+
+// 5 pixels wide
+$heart: (
+    ($t, $pink, $t, $pink, $t),
+    (listBuilder(5, $pink)),
+    ($t, listBuilder(3, $pink), $t),
+    ($t, $t, $pink, $t, $t)
+);
+
+.pixel_art {
+    position: relative; 
+    width: calc(23 * #{$size});
+    height: calc(18 * #{$size});
+    margin: 1rem;
+}
+
+#envelope {
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: $size;
+        height: $size;
+        box-shadow: pixelize($envelope, $size);
+    }
+}
+
+#heart {
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: $size;
+        height: $size;
+        box-shadow: pixelize($heart, $size);
+    }
+}
