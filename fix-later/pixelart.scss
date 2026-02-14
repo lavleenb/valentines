@@ -50,7 +50,7 @@
     }
 
     $result: string.unquote($result);
-    @return $result
+    @return string.slice($result, 3)
 }
 
 $size: 20px;
@@ -92,6 +92,12 @@ $heart: (
     ($t, listBuilder(3, $pink), $t),
     ($t, $t, $pink, $t, $t)
 );
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
 
 .pixel_art {
     position: relative; 

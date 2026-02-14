@@ -1,0 +1,32 @@
+:root {
+            --confetti-btn-bg: #9933ff; /* A festive purple */
+            --confetti-btn-text-color: #ffffff;
+            --confetti-btn-bg-hover: #8000ff;
+            --confetti-btn-focus-outline: #9933ff;
+        }
+        
+        .confetti-container {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            min-height: 250px;
+            background-color: #f8f9fa;
+        }
+
+        #yes-btn {
+            display: inline-block;
+            
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        #yes-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        #yes-btn:focus-visible {
+            outline-offset: 3px;
+        }
